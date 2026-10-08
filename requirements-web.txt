@@ -1,0 +1,6 @@
+-r requirements.txt
+Flask>=3.1,<4
+tzdata>=2026.1
+pywebpush>=2.5,<3
+cryptography>=46,<51
+waitress>=3,<4

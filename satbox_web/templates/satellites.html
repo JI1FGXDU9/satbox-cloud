@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block heading %}衛星選択{% endblock %}
+{% block content %}
+<p>NASA.ALLから観測する衛星を選んで保存してください。選んだ衛星をPass計算の対象にし、通知設定ではその中から通知する衛星を選びます。</p>
+{% for message in get_flashed_messages() %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
+{% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
+<form method="post" id="satellite-selection-form" class="satellite-selector">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="satellite-lists">
+<section><label for="available-satellites">利用可能な衛星</label><input type="search" id="satellite-search" placeholder="衛星名を検索" aria-label="利用可能な衛星を検索">
+<select multiple size="16" id="available-satellites" aria-label="利用可能な衛星">{% for name in available %}<option value="{{ name }}">{{ name }}</option>{% endfor %}</select></section>
+<div class="satellite-moves">
+<button type="button" data-move="all-add" aria-label="全衛星を追加">&gt;&gt;</button>
+<button type="button" data-move="add" aria-label="選択した衛星を追加">&gt;</button>
+<button type="button" data-move="remove" aria-label="選択した衛星を削除">&lt;</button>
+<button type="button" data-move="all-remove" aria-label="全衛星を削除">&lt;&lt;</button>
+</div>
+<section><label for="selected-satellites">選択した衛星 <span id="selected-count">{{ selected|length }}</span>件</label>
+<select multiple size="16" id="selected-satellites" name="satellites" aria-label="選択した衛星">{% for name in selected %}<option value="{{ name }}">{{ name }}{% if name in missing %}（TLEなし）{% endif %}</option>{% endfor %}</select></section>
+</div>
+<p class="footnote">10衛星の制限はありません。選択数が多いほど初回の計算に時間がかかります。&gt;&gt; は全衛星を追加します。通知ON/OFFは「通知設定」で指定します。空の選択も保存できます。</p>
+<button type="submit" class="refresh">保存</button> <a href="{{ url_for('index') }}">Pass一覧へ戻る</a>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script><script src="{{ url_for('static',filename='satellites.js') }}"></script>{% endblock %}

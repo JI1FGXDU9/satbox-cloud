@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block heading %}退会完了{% endblock %}
+{% block content %}<p class="empty">アカウントを削除しました。</p><p><a href="{{ url_for('auth.login') }}">ログイン画面へ</a></p>{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script>{% endblock %}

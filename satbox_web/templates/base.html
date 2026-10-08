@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}SatBox Cloud{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><main><header><div><h1>{% block heading %}SatBox Cloud{% endblock %}</h1></div>
+<nav>{% if g.user %}<a href="{{ url_for('index') }}">Pass一覧</a><a href="{{ url_for('auth.settings') }}">QTH設定</a>
+<a href="{{ url_for('satellites.selection') }}">衛星選択</a>
+<a href="{{ url_for('notifications.queue') }}">通知予定</a><a href="{{ url_for('notifications.settings') }}">通知設定</a>
+<a href="{{ url_for('push.settings') }}">通知端末登録</a>
+{% if g.user.is_admin %}<a href="{{ url_for('admin.dashboard') }}">管理画面</a>{% endif %}
+<a class="danger-link" href="{{ url_for('auth.withdraw') }}">退会</a>
+<form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">ログアウト</button></form>
+{% else %}{% block guest_nav %}<a href="{{ url_for('auth.login') }}">ログイン</a><a href="{{ url_for('auth.register') }}">ユーザー登録</a>{% endblock %}{% endif %}</nav></header>
+{% block content %}{% endblock %}</main><script src="{{ url_for('static', filename='password.js') }}" defer></script>{% block scripts %}{% endblock %}</body></html>
+

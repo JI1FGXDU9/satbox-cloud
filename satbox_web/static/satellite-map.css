@@ -1,0 +1,18 @@
+main:has(.pass-workspace){max-width:1700px}
+.pass-workspace{display:grid;grid-template-columns:minmax(360px, .85fr) minmax(0,1.65fr);gap:20px;align-items:start}
+.map-panel{position:sticky;top:16px;background:white;border:1px solid #dbe3e8;border-radius:8px;overflow:hidden}
+.map-toolbar{padding:12px;display:flex;align-items:center;gap:10px}.map-toolbar h2{margin:0;white-space:nowrap}.map-toolbar select{min-width:0;flex:1;padding:6px}
+#satellite-map{height:600px;background:#aad3df;z-index:0}
+#map-status{padding:8px 12px;margin:0;font-size:.85rem;min-height:44px}
+.pass-list{min-width:0;overflow-x:auto}.map-select{padding:0;border:0;background:transparent;text-align:left;color:inherit;white-space:nowrap}.map-select[aria-pressed="true"]{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:1100px){.pass-workspace{grid-template-columns:1fr}.map-panel{position:static}#satellite-map{height:450px}}
+@media(max-width:700px){#satellite-map{height:380px}}
+.sat-icon{font-size:31px;line-height:32px;color:#000;text-shadow:0 1px 1px #fff;transform:rotate(-35deg)}
+.sat-label{background:#fff;border:1px solid #999;border-radius:4px;color:#222;font-size:15px;padding:4px 7px;white-space:nowrap;box-shadow:0 1px 4px #777}
+.map-gauges{display:flex;align-items:flex-end;gap:14px;background:rgba(255,255,255,.78);padding:5px 8px;border-radius:7px}
+.gauge-label{font-size:12px;text-align:center;color:#111}
+svg{display:block}
+@media(max-width:600px){#title{font-size:16px}#status{font-size:12px}#header{gap:6px;padding:6px}#header button{min-width:62px}.map-gauges{gap:4px;padding:3px}}
+
+.compact-summary{grid-template-columns:1.05fr 1.15fr 1fr;gap:12px}.compact-summary>div{padding:12px 14px}.compact-summary h2{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0;font-size:1rem}.compact-summary h2 strong{font-weight:600}.compact-summary p{margin:5px 0 0;white-space:nowrap}.clock-line time{font-weight:600;font-variant-numeric:tabular-nums}.time-mode{font-size:.85rem;font-weight:400}.time-mode[aria-current="true"]{font-weight:700;color:#20313e;text-decoration:none}
+@media(max-width:1300px){.compact-summary{grid-template-columns:1fr}.compact-summary p{white-space:normal}}

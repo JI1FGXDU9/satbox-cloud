@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block heading %}通知端末登録{% endblock %}
+{% block content %}
+<p>このブラウザーで通知を許可し、端末を登録してください。通知する衛星・仰角・時間帯は<a href="{{ url_for('notifications.settings') }}">通知設定</a>で指定します。</p>
+{% if not configured %}<p class="notice">サーバーのWeb Push設定は未完了です。setup_push.pyでHTTPS公開URLと鍵を設定してください。</p>{% endif %}
+<section class="form-panel"><label>端末名<input id="push-label" maxlength="80" placeholder="例：自分のスマートフォン"></label>
+<button id="push-register" type="button" {% if not configured %}disabled{% endif %}>この端末の通知を登録</button>
+<button id="push-unsubscribe" type="button">この端末の通知を解除</button>
+<p id="push-status" role="status">登録状態を確認中…</p></section>
+<h2>登録済みの端末</h2>
+{% for device in devices %}<p>{{ device.label }} <button type="button" class="push-remove" data-id="{{ device.id }}">この登録を解除</button></p>{% else %}<p>登録済みの端末はありません。</p>{% endfor %}
+<p class="footnote">解除した端末への送信は停止します。複数の端末を登録できます。通知予定の生成処理と送信処理をサーバーで継続実行する必要があります。</p>
+<p><a class="refresh" href="{{ url_for('index') }}">Pass一覧へ戻る</a></p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script><script>window.satboxPush={key:{{ public_key|tojson }},csrf:{{ csrf_token()|tojson }},worker:{{ url_for('push.worker')|tojson }},scope:{{ (request.script_root + '/')|tojson }},register:{{ url_for('push.register')|tojson }},current:{{ url_for('push.current')|tojson }},remove:{{ url_for('push.remove')|tojson }}};</script>
+<script src="{{ url_for('static',filename='push-settings.js') }}"></script>{% endblock %}

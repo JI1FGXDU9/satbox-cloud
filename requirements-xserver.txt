@@ -1,0 +1,10 @@
+# CentOS 7 / user-installed Python 3.12. No change to local requirements.txt.
+skyfield==1.55
+sgp4==2.27
+numpy==2.2.6
+Flask>=3.1,<4
+tzdata>=2026.1
+pywebpush>=2.5,<3
+cryptography>=46,<51
+waitress>=3,<4
+pysqlite3-binary==0.5.4.post2

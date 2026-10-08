@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}SatBox Cloud — 衛星Pass予測{% endblock %}
+{% block heading %}衛星Pass予測{% endblock %}
+{% block content %}
+  <style>.pass-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pass-actions button[aria-pressed="true"]{background:#17677a;color:white}.pass-actions button:focus-visible{outline:2px solid #17677a;outline-offset:3px}</style>
+  <p class="pass-actions"><button type="button" data-pass-language="ja" aria-pressed="true">日本語</button><button type="button" data-pass-language="en" aria-pressed="false">English</button><a class="refresh" href="{{ url_for('index') }}">一覧を更新</a></p>
+  <section class="summary compact-summary" aria-label="観測条件">
+    <div><h2>観測地点 <strong>{{ g.user.callsign }}</strong></h2><p>緯度 {{ '%.3f'|format(observer.latitude_deg) }}° 経度 {{ '%.3f'|format(observer.longitude_deg) }}° グリッド {{ g.user.grid_locator }}</p></div>
+    <div><h2>現在時刻 <a href="#" class="time-mode" data-mode="local">LOCAL</a> <a href="#" class="time-mode" data-mode="gmt">GMT</a></h2><p class="clock-line"><time id="clock"></time> <time id="gmt-clock"></time> {{ timezone_name }}</p></div>
+    <div><h2>TLE更新日時 <strong>{% if updated %}{{ updated.strftime('%Y/%m/%d %H:%M') }}{% else %}不明{% endif %}</strong></h2><p>使用データー： {{ config['tle_file'] }}</p></div>
+  </section>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="{{ url_for('static', filename='satellite-map.css') }}">
+  <div class="pass-workspace">
+  <section class="map-panel" aria-labelledby="map-title">
+    <div class="map-toolbar"><h2 id="map-title">衛星地図</h2><strong id="map-satellite-name"></strong></div>
+    <div id="satellite-map" aria-label="衛星位置と可視範囲の地図"></div>
+    <p id="map-status" role="status">衛星データを取得中...</p>
+  </section>
+  <section class="pass-list" aria-labelledby="passes-title">
+    <div class="list-heading"><h2 id="passes-title">通過中・今後{{ '%g'|format(hours) }}時間のPass</h2><span id="pass-count">{{ rows|length }}件</span></div>
+    <p class="conditions">通知の最低最大仰角 {{ '%g'|format(minimum) }}° · 通知時間帯 {{ start_time }}～{{ end_time }} · horizon {{ '%g'|format(horizon) }}° · AOS順<br>通知のチェックは衛星ごとに連動します。<a href="{{ url_for('notifications.queue') }}">通知予定 <span id="notification-queue-count">{{ queue_count }}</span>件</a></p>
+    <p id="selection-status" class="notice" role="status" hidden></p>
+    <p id="speech-status" class="notice" role="status" hidden></p>
+    {% if errors %}<div class="notice" role="alert">一部の衛星を計算できませんでした。表示は全衛星分ではありません。<ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+    {% if rows %}
+    <table><thead><tr><th>衛星名</th><th>カウントダウン</th><th data-time-kind="AOS">AOSタイム</th><th data-time-kind="LOS">LOSタイム</th><th>最大仰角</th><th>AOS方位角</th><th>通知状態</th></tr></thead>
+    <tbody>{% for row in rows %}<tr data-announcement-ms="{{ row.announcement_ms }}" data-pre-allowed="{{ '0' if row.muted else '1' }}" data-rising-allowed="{{ '1' if row.rising_allowed else '0' }}" data-maxel="{{ row.maxel }}" class="pass-row{% if row.active %} pass-active{% endif %}{% if row.muted %} pass-muted{% endif %}"{% if row.muted %} title="{{ row.muted_reason }}"{% endif %}>
+      <th scope="row"><label class="satellite-choice"><input type="checkbox" class="satellite-toggle" data-satellite="{{ row.name }}" aria-label="{{ row.name }}のAOS通知" {% if row.name in notify_satellites %}checked{% endif %}> {{ row.name }}</label></th>
+      <td data-label="カウントダウン"><span class="countdown" data-aos-ms="{{ row.aos_ms }}" data-los-ms="{{ row.los_ms }}">{% if row.active %}AOS中{% else %}計算中{% endif %}</span></td>
+      <td data-label="AOSタイム"><time class="pass-time" datetime="{{ row.aos.isoformat() }}">{{ row.aos.strftime('%m/%d %H:%M:%S') }}</time></td>
+      <td data-label="LOSタイム"><time class="pass-time" datetime="{{ row.los.isoformat() }}">{{ row.los.strftime('%m/%d %H:%M:%S') }}</time></td>
+      <td data-label="最大仰角">{{ '%.1f'|format(row.maxel) }}°</td>
+      <td data-aos-az="{{ row.aos_az }}" data-label="AOS方位角">{{ '%.1f'|format(row.aos_az) }}°</td>
+      <td data-label="通知状態"><span class="notification-plan-status">{% if row.notification_planned %}予定（未送信）{% endif %}</span>{% if row.muted %}<div class="pass-reasons" aria-label="通知条件外の理由">{% if '最低最大仰角未満' in row.muted_reason %}<span class="pass-badge badge-elevation">仰角不足</span>{% endif %}{% if '通知時間帯外' in row.muted_reason %}<span class="pass-badge badge-hours">時間帯外</span>{% endif %}</div>{% else %}<span class="notification-no-plan"{% if row.notification_planned %} hidden{% endif %}>—</span>{% endif %}</td>
+    </tr>{% endfor %}</tbody></table>
+    {% else %}<p class="empty">指定条件に合う今後のPassはありません。</p>{% endif %}
+    <p class="footnote">通過中・今後のPassをAOS順に表示しています。通知条件外のPassも残し、通知状態欄に「仰角不足」「時間帯外」を表示します。時間帯は通知予定時刻で判定します。通過中の衛星名とカウントダウンは赤文字を優先し、LOSまでの残り時間を表示します。</p>
+  </section>
+  </div>
+  <footer>一覧は60秒ごとに更新 · Pass計算時刻 {{ generated.strftime('%Y/%m/%d %H:%M:%S') }}<br>TLEは保存済みファイルを使用します。古いTLEでは実際の通過時刻とずれる場合があります。<br><small>Copyright © 2026 Kouichi Ueno — JI1FGX/DU9</small></footer>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='pass-language.js') }}"></script>
+<script>
+window.satboxMap = {url: {{ url_for('satellite_map.data')|tojson }}, userId: {{ g.user.id|tojson }}, observerLat: {{ observer.latitude_deg|tojson }}, observerLon: {{ observer.longitude_deg|tojson }}};
+window.satboxClock = {serverTime: {{ (now.timestamp() * 1000)|int }}, timezoneName: {{ timezone_name|tojson }}};
+window.satboxSelection = {url: {{ url_for('notifications.satellite')|tojson }}, csrfToken: {{ csrf_token()|tojson }}};
+window.satboxSpeech = {userId: {{ g.user.id|tojson }}, leadMinutes: {{ announcement_lead|tojson }}};
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{{ url_for('static', filename='satellite-map.js') }}"></script>
+<script src="{{ url_for('static', filename='passes.js') }}"></script>
+<script src="{{ url_for('static', filename='satellite-selection.js') }}"></script>
+<script src="{{ url_for('static', filename='announcements.js') }}"></script>
+{% endblock %}

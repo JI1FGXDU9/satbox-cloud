@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block heading %}退会{% endblock %}
+{% block content %}<section class="form-panel">
+<p>{{ g.user.callsign }} のアカウント、QTH設定、保存済みPassを削除します。削除後は元に戻せません。</p>
+{% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>現在のパスワード<span class="password-field"><input type="password" id="password" name="password" maxlength="128" autocomplete="current-password" required><button class="password-toggle" type="button" aria-controls="password" aria-label="パスワードを表示" aria-pressed="false" title="パスワードを表示"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 3l18 18" hidden/></svg></button></span></label>
+<label class="confirm-delete"><input type="checkbox" name="confirm" value="yes" required> アカウントを削除して退会することを確認しました</label>
+<button class="danger" type="submit">退会してアカウントを削除</button> <a href="{{ url_for('auth.settings') }}">戻る</a>
+</form></section>{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script>{% endblock %}

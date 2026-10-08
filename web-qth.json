@@ -1,0 +1,13 @@
+{
+  "callsign": "JI1FGX/DU9",
+  "tle_file": "nasa.all",
+  "tle_metadata_file": "iss-qth.source.json",
+  "satellites": ["ISS", "RS-44", "AO-73", "IO-86", "FO-29", "SO-50", "AO-123", "JO-97"],
+  "latitude_deg": 8.209,
+  "longitude_deg": 123.860001,
+  "altitude_m": 20.0,
+  "utc_offset_hours": 8,
+  "duration_hours": 24,
+  "horizon_deg": 0,
+  "min_maxel_deg": 10
+}

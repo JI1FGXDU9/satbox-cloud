@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% block heading %}AOS通知予定キュー{% endblock %}
+{% block content %}
+<p><a class="refresh" href="{{ url_for('notifications.settings') }}">通知設定</a> <a class="refresh" href="{{ url_for('index') }}">Pass一覧へ戻る</a></p>
+<p class="notice">Web Pushの送信予定です。<a href="{{ url_for('push.settings') }}">通知端末登録</a>で通知を登録してください。送信プログラムの稼働が必要です。</p>
+<p>{{ g.user.callsign }}（ログインID：{{ g.user.login_id }}） · {{ g.user.timezone_name }}<br>最低最大仰角 {{ '%g'|format(prefs.min_maxel_deg) }}° · AOS {{ prefs.lead_minutes }}分前 · 通知時間帯 {{ start_time }}～{{ end_time }}<br>通知ON：{{ prefs.enabled_satellites|join('、') if prefs.enabled_satellites else 'なし' }} · 今後{{ g.user.duration_hours }}時間のPassから {{ rows|length }}件</p>
+{% if errors %}<div class="notice" role="alert">一部の衛星を計算できないため、予定は全衛星分ではありません。<ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+{% if rows %}<table><thead><tr><th>通知予定時刻</th><th>対象ユーザー</th><th>衛星名</th><th>AOS</th><th>最大仰角</th><th>状態</th></tr></thead>
+<tbody>{% for row in rows %}<tr><th scope="row"><time datetime="{{ row.send_at.isoformat() }}">{{ row.send_at.strftime('%m/%d %H:%M:%S') }}</time></th><td data-label="対象ユーザー">{{ g.user.callsign }}</td><td data-label="衛星名">{{ row.satellite_name }}</td><td data-label="AOS"><time datetime="{{ row.aos.isoformat() }}">{{ row.aos.strftime('%m/%d %H:%M:%S') }}</time></td><td data-label="最大仰角">{{ '%.1f'|format(row.maxel) }}°</td><td data-label="状態">予定（未送信）</td></tr>{% endfor %}</tbody></table>
+{% else %}<p class="empty">現在の条件に合う今後の通知予定はありません。</p>{% endif %}
+<p class="footnote">時間帯は通知予定時刻で判定します。通知予定時刻がすでに過ぎたPassと、通過中のPassは新たな通知予定に入れません。条件外のPassは一覧に理由ラベル付きで残し、通知予定から除外します。</p>
+<footer>{% if generated %}予定生成時刻 {{ generated.strftime('%Y/%m/%d %H:%M:%S') }}{% endif %}<br>通知条件・QTH・TLE変更時は予定を作り直します。</footer>
+{% endblock %}
+
+
+
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script>{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}{% block heading %}<span data-ja="ログイン" data-en="Log in">ログイン</span>{% endblock %}
+{% block guest_nav %}<a href="{{ url_for('auth.login') }}"><span data-ja="ログイン" data-en="Log in">ログイン</span></a><a href="{{ url_for('auth.register') }}"><span data-ja="ユーザー登録" data-en="Create an account">ユーザー登録</span></a>{% endblock %}
+{% block content %}
+<style>.language-switch button[aria-pressed="true"]{background:#17677a;color:white}.language-switch{margin:0 0 16px}.language-switch button:focus-visible{outline:2px solid #17677a;outline-offset:3px}</style>
+<p class="language-switch" aria-label="Language"><button type="button" data-language="ja" aria-pressed="true">日本語</button> <button type="button" data-language="en" aria-pressed="false">English</button></p>
+<section class="form-panel" data-aria-ja="SatBox Cloudについて" data-aria-en="About SatBox Cloud" aria-label="SatBox Cloudについて">
+<h2><span data-ja="アマチュア無線衛星のPass予測とAOS通知" data-en="Amateur radio satellite pass predictions and AOS alerts">アマチュア無線衛星のPass予測とAOS通知</span></h2>
+<p><span data-ja="SatBox Cloudは、あなたの観測地点（QTH）から見える衛星の通過予定を確認するサービスです。AOS・LOS時刻、最大仰角、AOS方位角、カウントダウンを表示します。" data-en="SatBox Cloud predicts satellite passes visible from your observing location (QTH). It displays acquisition of signal (AOS) and loss of signal (LOS) times, maximum elevation, azimuth at AOS, and a countdown.">SatBox Cloudは、あなたの観測地点（QTH）から見える衛星の通過予定を確認するサービスです。AOS・LOS時刻、最大仰角、AOS方位角、カウントダウンを表示します。</span></p>
+<p><span data-ja="通知する衛星や仰角・時間帯を設定し、登録したスマートフォンやPCでWeb Push通知を受け取れます。Pass一覧を開いている間は、事前案内とAOS時の音声アナウンスも行います。" data-en="Choose satellites, a minimum peak elevation, and alert hours to receive Web Push notifications on your registered smartphone or PC. While the pass list is open, voice announcements provide advance notice and announce AOS.">通知する衛星や仰角・時間帯を設定し、登録したスマートフォンやPCでWeb Push通知を受け取れます。Pass一覧を開いている間は、事前案内とAOS時の音声アナウンスも行います。</span></p>
+<p><span data-ja="初めての方はユーザー登録後にQTHを設定してください。Push通知を使う端末は「通知端末登録」で登録します。" data-en="New users should create an account and set their QTH. Register each device for Push notifications on the “Notification devices” page.">初めての方はユーザー登録後にQTHを設定してください。Push通知を使う端末は「通知端末登録」で登録します。</span></p>
+<p>de JI1FGX/DU9 <a href="mailto:du9@ji1fgx.com"><span data-ja="問い合わせ" data-en="Contact">問い合わせ</span></a></p>
+</section>
+<section class="form-panel">
+{% if error %}<p id="login-error" class="notice" role="alert">{{ error }}</p>{% endif %}
+<p id="login-status" class="notice" role="status" hidden></p>
+<form id="login-form" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label><span data-ja="ログインID" data-en="Login ID">ログインID</span><input name="login_id" value="{{ login_id|default('') }}" maxlength="64" autocomplete="username" required></label>
+<label><span data-ja="パスワード" data-en="Password">パスワード</span><span class="password-field"><input type="password" id="password" name="password" maxlength="128" autocomplete="current-password" required><button class="password-toggle" type="button" aria-controls="password" aria-label="パスワードを表示" aria-pressed="false" title="パスワードを表示"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="M3 3l18 18" hidden/></svg></button></span></label>
+<button type="submit" class="refresh"><span data-ja="ログイン" data-en="Log in">ログイン</span></button></form>
+<p><a href="{{ url_for('auth.register') }}"><span data-ja="初めての方はこちらから登録" data-en="New here? Create an account">初めての方はこちらから登録</span></a></p></section>
+<footer><small>Copyright © 2026 Kouichi Ueno — JI1FGX/DU9</small></footer>
+{% endblock %}
+{% block scripts %}
+<script>window.satboxLogin = {tokenUrl: {{ url_for('auth.login_token')|tojson }}};</script>
+<script src="{{ url_for('static', filename='login.js') }}"></script>
+{% endblock %}

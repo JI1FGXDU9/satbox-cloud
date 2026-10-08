@@ -1,0 +1,46 @@
+{% extends 'base.html' %}{% block heading %}AOS通知設定{% endblock %}
+{% block content %}<section class="form-panel">
+<p>通知する衛星と条件を設定します。スマートフォンへの通知は「通知端末登録」で登録してください。</p>
+<p>表示する衛星は<a href="{{ url_for('satellites.selection') }}">衛星選択</a>で追加・削除できます。ここでは選択した衛星の中から通知対象を指定します。</p>
+{% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
+<form id="notification-settings-form" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<fieldset class="satellite-options"><legend>通知する衛星</legend>{% for name in names %}<label><input type="checkbox" name="enabled_satellites" value="{{ name }}" {% if name in values.get('enabled_satellites', []) %}checked{% endif %}>{{ name }}</label>{% endfor %}</fieldset>
+<label>最低最大仰角（一覧・通知共通、度）<input type="number" name="min_maxel_deg" value="{{ values.get('min_maxel_deg', 10) }}" min="0" max="90" step="any" required></label>
+<label>AOS何分前に通知するか<input type="number" name="lead_minutes" value="{{ values.get('lead_minutes', 5) }}" min="0" max="180" step="1" required></label>
+<div class="form-grid"><label>通知開始時刻<input type="time" name="start_time" value="{{ values.get('start_time', '07:00') }}" required></label>
+<label>通知終了時刻<input name="end_time" value="{{ values.get('end_time', '24:00') }}" placeholder="24:00" maxlength="5" required></label></div>
+<p class="footnote">{{ g.user.timezone_name }} のローカル時刻で判定します。終了は24:00も使用できます。22:00～06:00などの日をまたぐ指定にも対応します。開始と終了が同じ場合は24時間許可します。</p>
+<h2>AOS通知の繰り返し</h2>
+<div class="form-grid">
+<label>送信回数（回）<input type="number" id="repeat-count" name="repeat_count" min="1" max="5" step="1" value="{{ test_values.repeat_count }}" required></label>
+<label>次の送信までの待ち時間（秒）<input type="number" id="repeat-interval" name="interval_seconds" min="1" max="15" step="1" value="{{ test_values.interval_seconds }}" required></label>
+</div>
+<p class="footnote">各端末へ指定回数送信します。音源の長さ以上の待ち時間を指定してください。設定はテスト通知にも共通です。</p>
+<button class="refresh" type="submit">保存して通知予定を確認</button>
+</form></section>
+<section class="form-panel" aria-label="通知音のテスト">
+<h2>通知音のテスト</h2>
+{% for message in get_flashed_messages() %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
+<p>登録済みの自分の端末すべてへ、指定回数・待ち時間でテストPush通知を送ります。スマートフォンに設定された通知音を確認できます。</p>
+<form id="test-notification-form" method="post" action="{{ url_for('push.test_notification') }}">
+<input type="hidden" name="repeat_count" value="{{ test_values.repeat_count }}">
+<input type="hidden" name="interval_seconds" value="{{ test_values.interval_seconds }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<button class="refresh" type="submit">設定を保存してテスト通知を送る</button>
+</form>
+<p class="footnote">通知時間帯・仰角条件に関係なく送信します。テストは1分に1回です。テスト設定はユーザーごとに保存します。通常のAOS通知にも同じ回数・待ち時間を適用します。音源の長さ以上の待ち時間にしてください。配信遅延・端末側の抑制により、音の回数と間隔は保証されません。上の設定欄の未保存の変更は保存されません。</p>
+</section>{% endblock %}
+
+
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script>
+<script>
+document.getElementById('test-notification-form').addEventListener('submit', function(event) {
+  for (const [id, name] of [['repeat-count','repeat_count'],['repeat-interval','interval_seconds']]) {
+    const input = document.getElementById(id);
+    if (!input.reportValidity()) { event.preventDefault(); return; }
+    this.elements[name].value = input.value;
+  }
+});
+</script>
+{% endblock %}

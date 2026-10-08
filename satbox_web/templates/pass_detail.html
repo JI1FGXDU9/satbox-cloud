@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block heading %}{{ row.name }}のPass詳細{% endblock %}
+{% block content %}<section class="summary"><div><h2>AOS</h2>{{ row.aos.strftime('%Y/%m/%d %H:%M:%S') }}<p>方位角 {{ '%.1f'|format(row.aos_az) }}°</p></div>
+<div><h2>最大仰角</h2>{{ '%.1f'|format(row.maxel) }}°<p>{{ row.maximum_at.strftime('%Y/%m/%d %H:%M:%S') }}</p></div>
+<div><h2>LOS</h2>{{ row.los.strftime('%Y/%m/%d %H:%M:%S') }}<p>方位角 {{ '%.1f'|format(row.los_az) }}°</p></div></section>
+<p>{{ g.user.callsign }} · {{ g.user.timezone_name }} · 保存済みのPass計算結果</p>
+<a class="refresh" href="{{ url_for('index') }}">Pass一覧へ戻る</a>{% endblock %}

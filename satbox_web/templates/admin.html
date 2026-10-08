@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block heading %}管理画面{% endblock %}
+{% block content %}
+{% for message in get_flashed_messages() %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
+<section class="form-panel"><h2>NASA.ALLの手動更新</h2>
+<p>現在 {{ catalog_count }}衛星。{% if updated %}TLE更新日時：{{ updated.strftime('%Y/%m/%d %H:%M:%S') }} UTC{% else %}更新日時は不明です。{% endif %}</p>
+<p>AMSATから最新のNASA.ALLを取得します。全ユーザー共通のデータです。更新前のファイルは非公開フォルダーにバックアップします。</p>
+<form method="post" action="{{ url_for('admin.update_tle') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="refresh">NASA.ALLを更新</button></form></section>
+<p>管理者は全ユーザーの一覧を閲覧し、権限変更・一般ユーザーの削除・TLE更新ができます。管理者は削除できません。最後の管理者は解除・退会できません。</p>
+<h2>登録ユーザー {{ users|length }}人</h2>
+<table class="admin-users"><thead><tr><th>ログインID</th><th>コールサイン</th><th>メールアドレス</th><th>グリッド</th><th>QTH</th><th>タイムゾーン</th><th>選択衛星</th><th>登録端末</th><th>権限</th><th>権限変更</th><th>ユーザー削除</th></tr></thead>
+<tbody>{% for user in users %}<tr><th scope="row">{{ user.login_id }}</th><td data-label="コールサイン">{{ user.callsign }}</td><td data-label="メールアドレス">{{ user.email or '未登録' }}</td><td data-label="グリッド">{{ user.grid_locator }}</td><td data-label="QTH">{{ '%.6f'|format(user.latitude_deg) }}, {{ '%.6f'|format(user.longitude_deg) }} / {{ '%g'|format(user.altitude_m) }}m</td><td data-label="タイムゾーン">{{ user.timezone_name }}</td><td data-label="選択衛星">{{ user.satellites_count }}</td><td data-label="登録端末">{{ user.devices_count }}</td><td data-label="権限">{{ '管理者' if user.is_admin else '一般ユーザー' }}</td><td data-label="権限変更"><form method="post" action="{{ url_for('admin.user_role') }}" onsubmit="return confirm(window.satboxLanguage ? window.satboxLanguage.translate('このユーザーの管理者権限を変更しますか？') : 'このユーザーの管理者権限を変更しますか？');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="login_id" value="{{ user.login_id }}"><input type="hidden" name="action" value="{{ 'revoke' if user.is_admin else 'grant' }}"><button type="submit">{{ '管理者解除' if user.is_admin else '管理者に昇格' }}</button></form></td><td data-label="ユーザー削除">{% if user.is_admin %}<span>削除不可</span>{% else %}<form method="post" action="{{ url_for('admin.delete_user') }}" onsubmit="return confirm((window.satboxLanguage ? window.satboxLanguage.translate('このユーザーと関連データを削除します。元に戻せません。削除しますか？') : 'このユーザーと関連データを削除します。元に戻せません。削除しますか？') + '\n' + this.elements.login_id.value);"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="login_id" value="{{ user.login_id }}"><button type="submit">削除</button></form>{% endif %}</td></tr>{% endfor %}</tbody></table>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static',filename='pass-language.js') }}"></script>{% endblock %}
