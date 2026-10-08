@@ -7,7 +7,7 @@ SatBox Cloudは、アマチュア衛星の通過予測とAOS通知を、スマ�
 **[SatBox Cloudを利用する](https://ji1fgx.com/satbox)**
 
 SatBoxの機能のうち、衛星の通過予測とAOS通知に特化したWeb版です。無線機のドプラー制御やローテーター制御は含みません。専用Androidアプリのインストールは不要です。iPhoneでは、Safariからホーム画面に追加して利用します。
-
+**[SatBoxについては](https://ji1fgx.com/260909.html)**
 ## 主な機能
 
 - ユーザーごとの観測地点（QTH）で衛星の通過を予測
