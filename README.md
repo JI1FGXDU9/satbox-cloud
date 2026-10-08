@@ -10,6 +10,8 @@ This web version of SatBox focuses on satellite pass prediction and AOS alerts. 
 
 **[about SatBox Cloud](https://ji1fgx.com/en/260909.html)**
 
+**[SatBox KiCad PCB and firmware](https://ji1fgx.com/en/260918.php)**
+
 ## Main features
 
 - Predict satellite passes for each user's observing location (QTH)

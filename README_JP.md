@@ -10,6 +10,8 @@ SatBoxの機能のうち、衛星の通過予測とAOS通知に特化したWeb�
 
 **[SatBoxについては](https://ji1fgx.com/260909.html)**
 
+**[SatBox Bate版基板とファームウェア](https://ji1fgx.com/260918.php)**
+
 ## 主な機能
 
 - ユーザーごとの観測地点（QTH）で衛星の通過を予測
