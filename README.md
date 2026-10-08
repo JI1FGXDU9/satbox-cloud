@@ -7,7 +7,9 @@ SatBox Cloud is a web application for predicting amateur radio satellite passes 
 **[Open SatBox Cloud](https://ji1fgx.com/satbox)**
 
 This web version of SatBox focuses on satellite pass prediction and AOS alerts. It does not include radio Doppler control or antenna rotator control. No dedicated Android app is required. On an iPhone, add the site to your Home Screen using Safari.
-**[about SatBox](https://ji1fgx.com/en/260909.html)**
+
+**[about SatBox Cloud](https://ji1fgx.com/en/260909.html)**
+
 ## Main features
 
 - Predict satellite passes for each user's observing location (QTH)
@@ -38,6 +40,10 @@ For initial setup, follow this order: Create an account → Satellite selection 
 - [Web Push setup guide](Manual/Web_Push_Setup_Guide_EN.md)
 
 Allow notifications in your device and browser settings to receive Web Push alerts. Voice announcements work while the pass list is open. Notification sounds and delivery times depend on device settings and network conditions.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). Third-party libraries and services retain their respective licenses and terms.
 
 ## Copyright and contact
 
